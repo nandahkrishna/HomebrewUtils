@@ -27,15 +27,15 @@ bar = ProgressBar.create(
 
 # Convert Formula name to Livecheckable class name
 def convert_name(name)
-  name = name.sub(/^[a-z\d]*/) { |match| match.capitalize }
-  name.gsub(/(?:-|(\/))([a-z\d]*)/) { "#{$1}#{$2.capitalize}" } \
+  name = name.sub(/^[a-z\d]*/, &:capitalize)
+  name.gsub(%r{(?:-|(/))([a-z\d]*)}, "\\1\\2.capitalize") \
       .gsub("/", "::")
 end
 
 livecheckables.each do |livecheckable|
   name = livecheckable.split("/")[-1]
   formula_name = name.gsub(/\.rb$/, "")
-  class_name = convert_name(formula_name)  
+  class_name = convert_name(formula_name)
   # If Livecheckable already exists, notify
   if File.exist?(livecheckable)
     bar.log "\e[0;34m#{name}:\e[0m \e[0;31malready exists!\e[0m"
