@@ -1,0 +1,17 @@
+function brewacp() {
+  add
+  commit $1
+  git fetch origin master
+  rebase origin master
+  branch=`git branch | grep \* | cut -d ' ' -f2-`
+  git push --force nandahkrishna $branch
+}
+
+function addlcpr() {
+  formula=$(git diff origin/master --name-only | grep Livecheckables  | sed -e 's/Livecheckables\///' | sed -e 's/\.rb//')
+  gh pr create -R Homebrew/homebrew-livecheck -t "$formula: add livecheckable" -b "Adding Livecheckable for \`$formula\`."
+}
+
+function nanolc {
+  nano $(brew --repo homebrew/livecheck)/Livecheckables/$1.rb
+}
