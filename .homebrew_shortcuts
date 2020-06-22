@@ -2,7 +2,7 @@ function brewacp() {
   add
   commit $1
   git fetch origin master
-  rebase origin master
+  git rebase -i --autosquash origin/master
   branch=`git branch | grep \* | cut -d ' ' -f2-`
   git push --force nandahkrishna $branch
 }
