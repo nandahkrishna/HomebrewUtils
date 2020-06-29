@@ -7,6 +7,10 @@ function brewacp() {
   git push --force nandahkrishna $branch
 }
 
+function brewacplc() {
+  brewacp "squash! $(git log -1 --pretty=%B)"
+}
+
 function addlcpr() {
   formula=$(git diff origin/master --name-only | grep Livecheckables  | sed -e 's/Livecheckables\///' | sed -e 's/\.rb//')
   gh pr create -R Homebrew/homebrew-livecheck -t "$formula: add livecheckable" -b "Adding Livecheckable for \`$formula\`."
