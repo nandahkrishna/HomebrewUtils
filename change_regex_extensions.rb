@@ -66,7 +66,7 @@ formulae.each do |formula|
     livecheckable[regex_index].gsub!(/\\?\.z/, "\\.zip")
     livecheckable[regex_index].gsub!(/\\?\.j/, "\\.jar")
     livecheckable[regex_index].gsub!(
-      /\\?\.t(?:ar)?(?:\\?\.?[2A-Za-z]{1,3})?/, "\\.t"
+      /\\?\.t(?:ar)?(?:\\?\.?(?:[2A-Za-z]{1,3}|\[bgz2\]\+))?/, "\\.t"
     )
     File.write(formula, livecheckable.join("\n") + "\n")
     # Livecheck output after updation
