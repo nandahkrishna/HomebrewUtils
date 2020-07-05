@@ -8,20 +8,29 @@
 # \.j -> \.jar
 
 require "json"
+require "optparse"
 require "ruby-progressbar"
+
+# Options
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: change_regex_extensions.rb [OPTIONS] [FORMULAE]" \
+                "\n       [FORMULAE] are ignored if [OPTIONS] are specified"
+  opts.on("-z", "--zip", "Change all \\.z to \\.zip")
+  opts.on("-j", "--jar", "Change all \\.j to \\.jar")
+  opts.on("-t", "--tar", "Change all \\.tar and variants to \\.t")
+  opts.on("-h", "--help", "Prints this help message") do
+    puts opts
+    exit
+  end
+end.parse!(into: options)
 
 # Absolute path to Livecheckables
 livecheckables_dir = `echo $(brew --repo homebrew/livecheck)`.strip
 livecheckables_dir += "/Livecheckables/"
 
 # If command-line args are given, check only those Livecheckables
-# Else check all Livecheckables
-formulae = if ARGV.empty?
-             Dir[livecheckables_dir + "*.rb"]
-           else
-             ARGV.map { |s| livecheckables_dir + s + ".rb" }
-           end
-formulae = formulae.sort
+# Else check all Livecheckables which need changes
 zip_formulae = `grep "regex.*\\.z[^a-z]" #{livecheckables_dir}* \
                 | sed -e "s/:.*//"` \
                .split.sort
@@ -31,6 +40,17 @@ jar_formulae = `grep "regex.*\\.j[^a-z]" #{livecheckables_dir}* \
 tar_formulae = `grep "regex.*\\.t\\([Zabglpz]\\|xz\\)" #{livecheckables_dir}* \
                 | sed -e "s/:.*//"` \
                .split.sort
+formulae = []
+formulae += zip_formulae if options[:zip]
+formulae += jar_formulae if options[:jar]
+formulae += tar_formulae if options[:tar]
+if formulae.empty?
+  formulae = if ARGV.empty?
+               zip_formulae + jar_formulae + tar_formulae
+             else
+               ARGV.map { |s| livecheckables_dir + s + ".rb" }
+             end
+end
 
 # Progress bar
 bar = ProgressBar.create(
